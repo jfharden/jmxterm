@@ -1,0 +1,19 @@
+FROM openjdk:8
+
+COPY . /tmp/jmxterm
+
+RUN mkdir /opt/jmxterm && \
+    cd /tmp/jmxterm && \
+    curl -o /tmp/apache-maven-3.6.2-bin.tar.gz https://www-us.apache.org/dist/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz && \
+    tar zxvf /tmp/apache-maven-3.6.2-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.6.2 /opt/maven && \
+    /opt/maven/bin/mvn install && \
+    cp target/jmxterm-`cat target/maven-archiver/pom.properties | grep version | cut -f 2 -d =`-uber.jar /opt/jmxterm/jmxterm.jar && \
+    cd /opt/jmxterm && \
+    rm -rf /opt/apache-maven-3.6.2 /opt/maven /tmp/apache-maven-3.6.2-bin.tar.gz /tmp/jmxterm 
+
+WORKDIR /opt/jmxterm
+
+CMD ["java", "-jar", "jmxterm.jar"]
+
+
